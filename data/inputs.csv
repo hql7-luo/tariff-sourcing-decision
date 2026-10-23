@@ -1,0 +1,71 @@
+key,value,unit,type,source,as_of,note
+annual_volume_k,60000,thousand cartons per year,assumption,Case setting,2026-10,"One US customer program: 60 million printed folding cartons a year"
+board_kg_per_k,88,kg per 1000 cartons,assumption,Case setting,2026-10,"Mid-size retail carton: about 0.20 m2 blank at 400 g/m2 plus about 10% trim"
+cartons_k_per_load,200,thousand cartons per 40ft container or 53ft trailer,assumption,Weight-limited at about 17.6 t per load,2026-10,
+margin_on_cost,0.15,share,assumption,Case setting,2026-10,"Same supplier markup for every site; sets the customs value"
+holding_rate,0.20,share per year,assumption,Common supply chain textbook range 15-25%,2026-10,"Capital, storage and obsolescence on inventory in transit and safety stock"
+discount_rate,0.10,share per year,assumption,Case setting,2026-10,
+horizon_years,5,years,assumption,Case setting,2026-10,
+fx_cny_per_usd,6.6861,CNY per USD,sourced,Federal Reserve H.10 release,2026-10-16,
+fx_vnd_per_usd,25639,VND per USD,sourced,State Bank of Vietnam central rate (thitruongtaichinhtiente.vn),2026-10-20,
+fx_mxn_per_usd,18.5026,MXN per USD,sourced,Federal Reserve H.10 release,2026-10-16,
+cn_board_cny_per_t_incl_vat,4040,CNY per tonne,sourced,SunSirs white cardboard benchmark (via 21st Century Business Herald),2026-10-08,"China white cardboard (FBB); quoted including 13% VAT"
+cn_vat_rate,0.13,share,sourced,China standard VAT rate on goods,2026-10,"Input VAT is recoverable for exporters, so board is costed ex-VAT"
+vn_board_import_uplift,0.12,share,assumption,Freight + handling + distributor margin on Chinese board,2026-10,"No Vietnamese trade remedy on coated board found (Oct 2026 search)"
+us_fbb_usd_per_t,1178,USD per tonne,sourced,PackIndex US folding boxboard benchmark (OPN platform),2026-07-27,
+mx_board_delivery_uplift,0.06,share,assumption,Freight from US/Canadian mills to Tijuana,2026-10,
+mx_ad_duty_cn_board_usd_per_kg,0.4854,USD per kg,sourced,Mexico DOF definitive antidumping duty on Chinese coated board (idconline),2026-07-09,"Rate for most Chinese exporters; makes Chinese board uncompetitive in Mexico"
+cn_wage_cny_per_year,76055,CNY per year,sourced,"NBS 2025 average wage, private manufacturing units",2026-05-15,
+cn_labor_load,0.30,share,assumption,Employer social insurance and housing fund on a typical contribution base,2026-10,
+vn_wage_vnd_per_month,10000000,VND per month,sourced,"Vietnam NSO Q1 2026, salaried workers (Tuoi Tre)",2026-04,
+vn_months_paid,13,months per year,assumption,13th-month bonus is customary,2026-10,
+vn_labor_load,0.235,share,assumption,"Standard employer rates: social insurance 17.5% + health 3% + unemployment 1% + union fee 2%",2026-10,
+mx_wage_usd_per_hour_loaded,5.50,USD per hour,sourced,"Cosmo Sourcing 2026 border-zone loaded labor benchmark",2026,"Fully loaded; Mexico 40-hour week reform is a cost risk from 2027"
+hours_per_year,2300,hours per worker-year,assumption,About 44 hours a week,2026-10,
+labor_hours_per_k,1.8,hours per 1000 cartons,assumption,Mature China line incl. indirect labor,2026-10,
+vn_productivity,0.80,share of China output per hour,assumption,Steady state after ramp-up,2026-10,
+mx_productivity,0.85,share of China output per hour,assumption,Steady state after ramp-up,2026-10,
+vn_productivity_ramp,0.60,share of China output per hour,assumption,Year 1 of a new site,2026-10,
+mx_productivity_ramp,0.65,share of China output per hour,assumption,Year 1 of a new site,2026-10,
+cn_scrap,0.03,share,assumption,Mature line,2026-10,
+vn_scrap,0.05,share,assumption,Steady state,2026-10,
+mx_scrap,0.045,share,assumption,Steady state,2026-10,
+vn_scrap_ramp,0.10,share,assumption,Year 1,2026-10,
+mx_scrap_ramp,0.09,share,assumption,Year 1,2026-10,
+cn_other_materials_usd_per_k,13.0,USD per 1000 cartons,assumption,"Ink, coating, glue, foil, shipping cases, pallets",2026-10,
+vn_other_materials_usd_per_k,14.3,USD per 1000 cartons,assumption,China +10% (imported consumables),2026-10,
+mx_other_materials_usd_per_k,15.6,USD per 1000 cartons,assumption,China +20% (North American distributor pricing),2026-10,
+energy_kwh_per_k,30,kWh per 1000 cartons,assumption,"Printing, die-cutting, gluing, HVAC",2026-10,
+cn_power_cny_per_kwh,0.796,CNY per kWh,sourced,GlobalPetrolPrices business electricity,2025-06,
+vn_power_vnd_per_kwh,2088.9,VND per kWh,sourced,GlobalPetrolPrices business electricity,2025-06,
+mx_power_mxn_per_kwh,3.974,MXN per kWh,sourced,GlobalPetrolPrices business electricity,2025-06,
+variable_overhead_usd_per_k,6.0,USD per 1000 cartons,assumption,"Maintenance, plates, dies, QA consumables",2026-10,
+cn_fixed_usd_per_k,10.0,USD per 1000 cartons,assumption,Existing plant overhead share; freed China capacity is assumed redeployed,2026-10,
+site_area_m2,6000,m2,assumption,One folding carton line with warehouse,2026-10,
+vn_rent_usd_per_m2_month,5.25,USD per m2 per month,sourced,"Ready-built factory, Binh Duong 2026 range 4.5-6.0 (United Consulting)",2026,Midpoint
+mx_rent_usd_per_sf_year,9.42,USD per sq ft per year,sourced,"Newmark Tijuana industrial report, 1Q26 average asking rent",2026-03,
+vn_site_admin_usd_per_year,450000,USD per year,assumption,"Plant manager, QA, HR, finance, expat support",2026-10,
+mx_site_admin_usd_per_year,600000,USD per year,assumption,"Plant manager, QA, HR, finance, IMMEX/customs compliance",2026-10,
+capex_usd,5000000,USD,assumption,"Offset press with coater, die-cutter, folder-gluer, prepress and QC, installed",2026-10,
+startup_usd,1000000,USD,assumption,"Hiring, training, trials, customer requalification, moving",2026-10,
+salvage_share,0.40,share of capex,assumption,Resale value of equipment after 5 years,2026-10,
+prep_cost_usd,300000,USD,assumption,"Site shortlist, entity setup, sample runs with a local converter, customer pre-approval",2026-10,"Cost of keeping the Vietnam option ready without building yet"
+ocean_cn_usd_per_feu,7884,USD per 40ft,sourced,"Drewry WCI Shanghai-Los Angeles (via DCN)",2026-10-15,"Was 3132 on 2026-01-08"
+ocean_cn_usd_per_feu_low,3132,USD per 40ft,sourced,"Drewry WCI Shanghai-Los Angeles (via DCN)",2026-01-08,Used as the low end of the simulation range
+vn_ocean_premium,1.05,ratio to Shanghai-LA,assumption,Vietnam-LA usually prices slightly above Shanghai-LA,2026-10,
+cn_origin_usd_per_load,500,USD per container,assumption,"Taizhou-Ningbo trucking, THC, export docs",2026-10,
+vn_origin_usd_per_load,450,USD per container,assumption,"Binh Duong-Cat Lai trucking, THC, export docs",2026-10,
+us_port_drayage_usd_per_load,900,USD per container,sourced+assumption,"Gateway Lines LA port-Ontario drayage about 650 base+fuel (bids Jul-Oct 2026), plus about 250 chassis and terminal fees",2026-10-14,
+broker_ocean_usd_per_entry,185,USD per entry,assumption,Customs entry + ISF filing,2026-10,
+mx_truck_usd_per_load,1200,USD per trailer,assumption,"Tijuana plant to LA-area DC incl. border transfer (about 150 miles)",2026-10,
+broker_mx_usd_per_entry,150,USD per entry,assumption,US import entry (Mexican export broker included in truck cost),2026-10,
+mpf_rate,0.003464,share of customs value,sourced,CBP merchandise processing fee FY2027 (C.H. Robinson advisory),2026-10-01,
+mpf_min_usd,34.58,USD per entry,sourced,CBP FY2027,2026-10-01,
+mpf_max_usd,670.86,USD per entry,sourced,CBP FY2027,2026-10-01,
+hmf_rate,0.00125,share of customs value,sourced,Harbor maintenance fee 19 CFR 24.24 (ocean entries only),2026-10,
+cn_lead_days,30,days door to door,assumption,"About 7 days to port, 16 days ocean, 7 days US port and drayage",2026-10,
+vn_lead_days,34,days door to door,sourced+assumption,"Freightos HCMC-LA transit 27-36 days",2026-10,
+mx_lead_days,4,days door to door,sourced,"Cargado Tijuana-LA estimate 3-5 days",2026,
+cn_safety_days,14,days of demand,assumption,Ocean schedule variability,2026-10,
+vn_safety_days,16,days of demand,assumption,Ocean schedule variability,2026-10,
+mx_safety_days,5,days of demand,assumption,Border wait variability,2026-10,

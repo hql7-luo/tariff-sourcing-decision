@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tariff Sourcing Explorer</title>
+<meta name="description" content="Interactive landed-cost model: should a Chinese folding-carton maker serve US customers from China, Vietnam or Mexico?">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --surface-2: #f3f2ee;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11, 11, 11, 0.10);
+    --china: #2a78d6;
+    --vietnam: #eb6834;
+    --mexico: #1baf7a;
+    --good: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --surface-2: #232321;
+      --ink: #f0efec;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --axis: #383835;
+      --border: rgba(255, 255, 255, 0.10);
+      --china: #3987e5;
+      --vietnam: #d95926;
+      --mexico: #199e70;
+      --good: #0ca30c;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321; --ink: #f0efec; --ink-2: #c3c2b7;
+    --muted: #898781; --grid: #2c2c2a; --axis: #383835; --border: rgba(255, 255, 255, 0.10);
+    --china: #3987e5; --vietnam: #d95926; --mexico: #199e70; --good: #0ca30c;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 15px; line-height: 1.5;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 16px 48px; }
+  header { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+  .eyebrow { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+  h1 { font-size: 28px; line-height: 1.2; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .lede { color: var(--ink-2); margin: 0; max-width: 640px; }
+  .top-actions { display: flex; gap: 8px; align-items: center; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+  .seg button { border: 0; background: transparent; color: var(--ink-2); padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+  a { color: inherit; }
+  .link { font-size: 13px; color: var(--ink-2); text-decoration: none; border-bottom: 1px solid var(--axis); }
+
+  .presets { display: flex; gap: 8px; flex-wrap: wrap; margin: 24px 0 16px; align-items: center; }
+  .presets span { font-size: 13px; color: var(--muted); margin-right: 4px; }
+  .chip { border: 1px solid var(--border); background: var(--surface); color: var(--ink); border-radius: 999px;
+    padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+  .chip[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+
+  .grid { display: grid; grid-template-columns: 320px 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .card h2 { font-size: 14px; margin: 0 0 14px; color: var(--ink-2); font-weight: 600; }
+
+  .control { margin-bottom: 16px; }
+  .control:last-child { margin-bottom: 0; }
+  .control label { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink-2); margin-bottom: 4px; gap: 8px; }
+  .control output { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .control input[type=range] { width: 100%; accent-color: var(--ink); }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .group-title { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 18px 0 10px; }
+  .group-title:first-of-type { margin-top: 0; }
+
+  .verdict { display: flex; gap: 16px; flex-wrap: wrap; align-items: baseline; justify-content: space-between; }
+  .verdict .label { font-size: 13px; color: var(--ink-2); margin: 0; }
+  .verdict .winner { font-size: 30px; font-weight: 700; margin: 2px 0 0; display: flex; align-items: center; gap: 10px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex: none; }
+  .verdict .value { font-size: 15px; color: var(--ink-2); margin: 4px 0 0; }
+  .deltas { display: flex; gap: 20px; flex-wrap: wrap; }
+  .delta { font-size: 13px; color: var(--ink-2); }
+  .delta strong { display: block; font-size: 18px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .note { font-size: 13px; color: var(--ink-2); margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--grid); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-weight: 600; font-size: 12px; color: var(--muted); padding: 0 0 8px; border-bottom: 1px solid var(--grid); }
+  td { padding: 9px 0; border-bottom: 1px solid var(--grid); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; padding-left: 12px; white-space: nowrap; }
+  tr.best td { font-weight: 700; }
+  tr:last-child td { border-bottom: 0; }
+
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); margin-bottom: 8px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  #chart { width: 100%; display: block; overflow: visible; }
+  #chart text { font-family: inherit; }
+  .tooltip { position: fixed; pointer-events: none; background: var(--ink); color: var(--surface); font-size: 12px;
+    padding: 6px 8px; border-radius: 6px; opacity: 0; transition: opacity .1s; white-space: nowrap; z-index: 10; }
+  .stack { display: grid; gap: 16px; }
+  footer { margin-top: 24px; font-size: 12px; color: var(--muted); }
+  footer p { margin: 4px 0; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <p class="eyebrow" data-i18n="eyebrow"></p>
+      <h1 data-i18n="title"></h1>
+      <p class="lede" data-i18n="lede"></p>
+    </div>
+    <div class="top-actions">
+      <div class="seg" role="group" aria-label="Language">
+        <button type="button" data-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang="zh" aria-pressed="false">中文</button>
+      </div>
+      <a class="link" href="https://github.com/hql7-luo/tariff-sourcing-decision" data-i18n="repo"></a>
+    </div>
+  </header>
+
+  <div class="presets" role="group" aria-label="Tariff scenarios">
+    <span data-i18n="presets"></span>
+  </div>
+
+  <div class="grid">
+    <section class="card" aria-labelledby="controls-title">
+      <h2 id="controls-title" data-i18n="controls"></h2>
+      <div class="group-title" data-i18n="g_tariffs"></div>
+      <div class="control"><label for="cn"><span data-i18n="cn_tariff"></span><output id="cn_out"></output></label>
+        <input id="cn" type="range" min="0" max="100" step="0.5"></div>
+      <div class="control"><label for="vn"><span data-i18n="vn_tariff"></span><output id="vn_out"></output></label>
+        <input id="vn" type="range" min="0" max="50" step="0.5"></div>
+      <div class="control"><label for="mx"><span data-i18n="mx_tariff"></span><output id="mx_out"></output></label>
+        <input id="mx" type="range" min="0" max="30" step="0.5">
+        <div class="hint" data-i18n="mx_hint"></div></div>
+      <div class="group-title" data-i18n="g_costs"></div>
+      <div class="control"><label for="ocean"><span data-i18n="ocean"></span><output id="ocean_out"></output></label>
+        <input id="ocean" type="range" min="2000" max="10000" step="100">
+        <div class="hint" data-i18n="ocean_hint"></div></div>
+      <div class="control"><label for="mxboard"><span data-i18n="mxboard"></span><output id="mxboard_out"></output></label>
+        <input id="mxboard" type="range" min="700" max="1400" step="10">
+        <div class="hint" data-i18n="mxboard_hint"></div></div>
+      <div class="control"><label for="capex"><span data-i18n="capex"></span><output id="capex_out"></output></label>
+        <input id="capex" type="range" min="2" max="8" step="0.1"></div>
+      <div class="control"><label for="years"><span data-i18n="years"></span><output id="years_out"></output></label>
+        <input id="years" type="range" min="3" max="10" step="1">
+        <div class="hint" data-i18n="years_hint"></div></div>
+    </section>
+
+    <div class="stack">
+      <section class="card" aria-live="polite">
+        <div class="verdict">
+          <div>
+            <p class="label" data-i18n="cheapest"></p>
+            <p class="winner"><span class="dot" id="winner_dot"></span><span id="winner_name"></span></p>
+            <p class="value" id="winner_value"></p>
+          </div>
+          <div class="deltas" id="deltas"></div>
+        </div>
+        <p class="note" id="rule"></p>
+      </section>
+
+      <section class="card">
+        <h2 data-i18n="strategies"></h2>
+        <table>
+          <thead><tr><th data-i18n="strategy"></th><th class="num" data-i18n="avg_cost"></th><th class="num" data-i18n="vs_best"></th></tr></thead>
+          <tbody id="strategy_rows"></tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h2 data-i18n="breakdown"></h2>
+        <div class="legend" id="legend"></div>
+        <svg id="chart" role="img" aria-labelledby="chart-desc"></svg>
+        <p class="sr-only" id="chart-desc"></p>
+      </section>
+    </div>
+  </div>
+
+  <footer>
+    <p data-i18n="foot1"></p>
+    <p data-i18n="foot2"></p>
+  </footer>
+</div>
+<div class="tooltip" id="tooltip"></div>
+
+<script src="model-data.js"></script>
+<script src="model.js"></script>
+<script>
+(function () {
+  const M = window.SourcingModel;
+  const DATA = window.MODEL_DATA;
+
+  const TEXT = {
+    en: {
+      eyebrow: "Interactive explorer",
+      title: "China, Vietnam or Mexico?",
+      lede: "Landed cost of printed folding cartons for a US customer, from a fictional Zhejiang maker. Move the sliders to test tariff and cost scenarios.",
+      repo: "Code and method on GitHub ↗",
+      presets: "Tariff scenarios:",
+      controls: "Assumptions",
+      g_tariffs: "US tariff on cartons",
+      cn_tariff: "From China", vn_tariff: "From Vietnam", mx_tariff: "From Mexico",
+      mx_hint: "0% = USMCA-qualifying goods",
+      g_costs: "Costs",
+      ocean: "Ocean freight, Asia to LA", ocean_hint: "Drewry Shanghai–LA: $3,132 (Jan 2026) to $7,884 (Oct 2026)",
+      mxboard: "Mexico paperboard, delivered", mxboard_hint: "China board costs about $535/t; Mexico taxes Chinese board",
+      capex: "New-plant investment", years: "Planning horizon, years", years_hint: "Also the period over which a new plant must pay back",
+      cheapest: "Cheapest over the planning horizon",
+      per_k: "per 1,000 cartons delivered",
+      more: "more",
+      strategies: "Four strategies, average landed cost over the horizon",
+      strategy: "Strategy", avg_cost: "Per 1,000", vs_best: "vs. best",
+      breakdown: "Where the cost comes from (average over the horizon, per 1,000 cartons)",
+      foot1: "Model inputs as of Oct 2026: tariffs, freight, exchange rates, board prices and wages from public sources; other values are labeled assumptions. Fictional company; not trade, legal or investment advice.",
+      foot2: "Same model as the Python analysis in the repository; numbers match to the cent.",
+      options: { china: "Stay in China", vietnam: "Move to Vietnam now", mexico: "Move to Mexico now", staged: "Stay in China, keep Vietnam ready" },
+      sites: { CN: "China", VN: "Vietnam", MX: "Mexico" },
+      rows: { total: "Total landed cost", tariff: "Tariff", board: "Paperboard", freight: "Freight and US entry fees",
+        labor: "Labor", other: "Materials, energy, overhead", capital: "New-plant investment",
+        margin: "Supplier margin", carrying: "Inventory carrying" },
+      scenarios: { status_quo: "Today (Oct 2026)", relief: "Relief", overcapacity: "Overcapacity tariffs", usmca_friction: "USMCA friction" },
+      rule_vn: (be, now) => `With the other inputs as set, Vietnam matches China when China's tariff reaches ${be}. It is set to ${now}.`,
+      rule_none: () => "Vietnam cannot match China within a 0–100% China tariff at these inputs.",
+      switched: "switches in year 2",
+    },
+    zh: {
+      eyebrow: "交互式测算",
+      title: "中国、越南还是墨西哥？",
+      lede: "一家虚构的浙江彩盒厂向美国客户供应印刷折叠纸盒，比较三地的到岸总成本。拖动滑块测试不同关税和成本情景。",
+      repo: "GitHub 代码和方法 ↗",
+      presets: "关税情景：",
+      controls: "假设条件",
+      g_tariffs: "美国对纸盒的关税",
+      cn_tariff: "中国产", vn_tariff: "越南产", mx_tariff: "墨西哥产",
+      mx_hint: "0% = 符合 USMCA 原产地规则",
+      g_costs: "成本",
+      ocean: "亚洲到洛杉矶海运费", ocean_hint: "Drewry 上海–洛杉矶：$3,132（2026年1月）到 $7,884（2026年10月）",
+      mxboard: "墨西哥纸板到厂价", mxboard_hint: "中国白卡纸约 $535/吨；墨西哥对中国纸板征反倾销税",
+      capex: "新工厂投资", years: "评估年限", years_hint: "也是新工厂收回投资的年限",
+      cheapest: "评估期内总成本最低",
+      per_k: "每千个纸盒到岸成本",
+      more: "更贵",
+      strategies: "四种策略在评估期内的平均到岸成本",
+      strategy: "策略", avg_cost: "每千个", vs_best: "比最优",
+      breakdown: "成本构成（评估期平均，每千个纸盒）",
+      foot1: "模型输入截至 2026年10月：关税、运费、汇率、纸板价格和工资来自公开数据，其他数值均标注为假设。公司为虚构，不构成贸易、法律或投资建议。",
+      foot2: "与仓库中的 Python 分析使用同一模型，结果一致。",
+      options: { china: "留在中国", vietnam: "现在转去越南", mexico: "现在转去墨西哥", staged: "留在中国，同时准备越南" },
+      sites: { CN: "中国", VN: "越南", MX: "墨西哥" },
+      rows: { total: "到岸总成本", tariff: "关税", board: "纸板", freight: "运费和美国清关费",
+        labor: "人工", other: "辅料、能源、管理费用", capital: "新工厂投资",
+        margin: "供应商利润", carrying: "库存占用成本" },
+      scenarios: { status_quo: "当前（2026年10月）", relief: "关税缓和", overcapacity: "产能过剩关税", usmca_friction: "USMCA 摩擦" },
+      rule_vn: (be, now) => `在其他假设不变时，中国关税达到 ${be} 越南才与中国持平，当前设为 ${now}。`,
+      rule_none: () => "在这组假设下，中国关税在 0–100% 内越南都无法与中国持平。",
+      switched: "第 2 年转越南",
+    },
+  };
+
+  const ROWS = [
+    ["total", ["total"]],
+    ["tariff", ["tariff"]],
+    ["board", ["board"]],
+    ["freight", ["freight", "us_entry_fees"]],
+    ["labor", ["labor"]],
+    ["other", ["other_materials", "energy", "overhead"]],
+    ["capital", ["capital_recovery"]],
+    ["margin", ["supplier_margin"]],
+    ["carrying", ["inventory_carrying"]],
+  ];
+  const SITES = ["CN", "VN", "MX"];
+  const SITE_VAR = { CN: "--china", VN: "--vietnam", MX: "--mexico" };
+  const OPTION_SITE = { china: "CN", vietnam: "VN", mexico: "MX" };
+
+  let lang = "en";
+  try { if (localStorage.getItem("lang") === "zh") lang = "zh"; } catch (e) { /* storage unavailable */ }
+
+  const $ = (id) => document.getElementById(id);
+  const money = (v) => "$" + v.toFixed(1);
+  const pct = (v) => (v * 100).toFixed(1).replace(/\.0$/, "") + "%";
+  const color = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+  // Current assumptions, starting from today's values
+  const today = DATA.scenarios.find((s) => s.name === "status_quo");
+  const state = {
+    cn: today.tariff.CN, vn: today.tariff.VN, mx: today.tariff.MX,
+    ocean: DATA.inputs.ocean_cn_usd_per_feu,
+    mxboard: DATA.sites.MX.board_usd_per_t,
+    capex: DATA.inputs.capex_usd / 1e6,
+    years: DATA.inputs.horizon_years,
+    preset: "status_quo",
+  };
+
+  // Build model inputs from the slider state
+  function currentModel() {
+    const inp = Object.assign({}, DATA.inputs, { capex_usd: state.capex * 1e6, horizon_years: state.years });
+    const sites = JSON.parse(JSON.stringify(DATA.sites));
+    sites.CN.freight_per_load = state.ocean;
+    sites.VN.freight_per_load = state.ocean * DATA.inputs.vn_ocean_premium;
+    sites.MX.board_usd_per_t = state.mxboard;
+    const tariffs = { CN: state.cn, VN: state.vn, MX: state.mx };
+    return { inp, sites, tariffs };
+  }
+
+  // China tariff at which Vietnam matches China (5-year view), or null
+  function breakEven(m) {
+    const gap = (t) => {
+      const tariffs = Object.assign({}, m.tariffs, { CN: t });
+      return M.optionPresentValue("china", tariffs, m.sites, m.inp) - M.optionPresentValue("vietnam", tariffs, m.sites, m.inp);
+    };
+    const g0 = gap(0), g1 = gap(1);
+    const t = -g0 / (g1 - g0);
+    return t >= 0 && t <= 1 ? t : null;
+  }
+
+  function renderText() {
+    const T = TEXT[lang];
+    document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+    document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = T[el.dataset.i18n]; });
+    document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+    renderPresets();
+    $("legend").innerHTML = SITES.map((s) => `<span><i style="background:var(${SITE_VAR[s]})"></i>${T.sites[s]}</span>`).join("");
+  }
+
+  function renderPresets() {
+    const T = TEXT[lang];
+    const box = document.querySelector(".presets");
+    box.querySelectorAll(".chip").forEach((c) => c.remove());
+    DATA.scenarios.forEach((s) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      b.textContent = T.scenarios[s.name] || s.label;
+      b.setAttribute("aria-pressed", String(state.preset === s.name));
+      b.addEventListener("click", () => {
+        state.cn = s.tariff.CN; state.vn = s.tariff.VN; state.mx = s.tariff.MX; state.preset = s.name;
+        syncInputs(); update();
+      });
+      box.appendChild(b);
+    });
+  }
+
+  function syncInputs() {
+    $("cn").value = state.cn * 100; $("vn").value = state.vn * 100; $("mx").value = state.mx * 100;
+    $("ocean").value = state.ocean; $("mxboard").value = state.mxboard;
+    $("capex").value = state.capex; $("years").value = state.years;
+  }
+
+  function update() {
+    const T = TEXT[lang];
+    $("cn_out").textContent = pct(state.cn);
+    $("vn_out").textContent = pct(state.vn);
+    $("mx_out").textContent = pct(state.mx);
+    $("ocean_out").textContent = "$" + state.ocean.toLocaleString("en-US");
+    $("mxboard_out").textContent = "$" + Math.round(state.mxboard).toLocaleString("en-US") + "/t";
+    $("capex_out").textContent = "$" + state.capex.toFixed(1) + "M";
+    $("years_out").textContent = state.years;
+    document.querySelectorAll(".chip").forEach((c, i) => c.setAttribute("aria-pressed", String(DATA.scenarios[i].name === state.preset)));
+
+    const m = currentModel();
+    const costs = {};
+    Object.keys(T.options).forEach((o) => { costs[o] = M.pvToUnitCost(M.optionPresentValue(o, m.tariffs, m.sites, m.inp), m.inp); });
+
+    // Verdict among the three sites
+    const siteOptions = ["china", "vietnam", "mexico"].sort((a, b) => costs[a] - costs[b]);
+    const best = siteOptions[0];
+    $("winner_dot").style.background = `var(${SITE_VAR[OPTION_SITE[best]]})`;
+    $("winner_name").textContent = T.sites[OPTION_SITE[best]];
+    $("winner_value").textContent = `${money(costs[best])} ${T.per_k}`;
+    $("deltas").innerHTML = siteOptions.slice(1).map((o) =>
+      `<div class="delta"><strong>+${money(costs[o] - costs[best])}</strong>${T.sites[OPTION_SITE[o]]}${lang === "zh" ? "" : " "}${T.more}</div>`).join("");
+
+    const be = breakEven(m);
+    $("rule").textContent = be === null ? T.rule_none() : T.rule_vn(pct(be), pct(state.cn));
+
+    // Strategy table
+    const minCost = Math.min(...Object.values(costs));
+    const staged = M.stagedPresentValue(m.tariffs, m.sites, m.inp);
+    $("strategy_rows").innerHTML = Object.keys(T.options).sort((a, b) => costs[a] - costs[b]).map((o) => {
+      const extra = costs[o] - minCost;
+      const name = T.options[o] + (o === "staged" && staged.switched ? (lang === "zh" ? `（${T.switched}）` : ` (${T.switched})`) : "");
+      return `<tr class="${extra < 1e-9 ? "best" : ""}"><td>${name}</td><td class="num">${money(costs[o])}</td>` +
+        `<td class="num">${extra < 1e-9 ? "—" : "+" + money(extra)}</td></tr>`;
+    }).join("");
+
+    drawChart(m);
+  }
+
+  function drawChart(m) {
+    const T = TEXT[lang];
+    const svg = $("chart");
+    const width = svg.clientWidth || 640;
+    const compact = width < 520;              // phones: row labels sit above the bars
+    const labelW = compact ? 4 : Math.min(190, width * 0.36);
+    const labelH = compact ? 18 : 0;
+    const barH = 9, barGap = 2, rowGap = compact ? 12 : 16;
+    const rowH = labelH + SITES.length * (barH + barGap) - barGap;
+    const top = 6;
+    const height = top + ROWS.length * (rowH + rowGap) + 22;
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    svg.setAttribute("height", height);
+
+    const data = {};
+    SITES.forEach((s) => { data[s] = M.averageBreakdown(m.sites[s], m.tariffs[s], m.inp); });
+    const maxValue = Math.max(...SITES.map((s) => data[s].total));
+    const plotW = width - labelW - 56;
+    const x = (v) => labelW + (v / (maxValue * 1.02)) * plotW;
+
+    const ink2 = color("--ink-2"), muted = color("--muted"), grid = color("--grid"), axis = color("--axis");
+    let out = "";
+
+    // Gridlines and ticks
+    const step = maxValue > 200 ? 50 : 25;
+    for (let v = 0; v <= maxValue * 1.02; v += step) {
+      out += `<line x1="${x(v)}" x2="${x(v)}" y1="${top - 4}" y2="${height - 20}" stroke="${grid}" stroke-width="1"/>`;
+      out += `<text x="${x(v)}" y="${height - 6}" text-anchor="middle" font-size="11" fill="${muted}">$${v}</text>`;
+    }
+
+    const desc = [];
+    ROWS.forEach(([key, cols], r) => {
+      const y0 = top + r * (rowH + rowGap);
+      const labelX = compact ? labelW : labelW - 10;
+      const labelY = compact ? y0 + 12 : y0 + rowH / 2 + 4;
+      out += `<text x="${labelX}" y="${labelY}" text-anchor="${compact ? "start" : "end"}" font-size="12.5" ` +
+        `font-weight="${key === "total" ? 700 : 400}" fill="${key === "total" ? color("--ink") : ink2}">${T.rows[key]}</text>`;
+      SITES.forEach((s, k) => {
+        const value = cols.reduce((sum, c) => sum + data[s][c], 0);
+        const y = y0 + labelH + k * (barH + barGap);
+        const w = Math.max(0, x(value) - x(0));
+        const tip = `${T.sites[s]} · ${T.rows[key]}: ${money(value)}`;
+        out += `<rect x="${x(0)}" y="${y}" width="${w}" height="${barH}" rx="2" fill="var(${SITE_VAR[s]})"/>`;
+        out += `<rect x="${x(0)}" y="${y - 1}" width="${Math.max(w, 24)}" height="${barH + 2}" fill="transparent" data-tip="${tip}"/>`;
+        out += `<text x="${x(value) + 4}" y="${y + barH - 1}" font-size="10.5" fill="${ink2}" ` +
+          `font-weight="${key === "total" ? 700 : 400}">${"$" + value.toFixed(0)}</text>`;
+        desc.push(tip);
+      });
+      if (r === 0) {
+        const yLine = y0 + rowH + rowGap / 2;
+        out += `<line x1="${x(0)}" x2="${width - 8}" y1="${yLine}" y2="${yLine}" stroke="${axis}" stroke-width="1"/>`;
+      }
+    });
+    out += `<line x1="${x(0)}" x2="${x(0)}" y1="${top - 4}" y2="${height - 20}" stroke="${axis}" stroke-width="1"/>`;
+    svg.innerHTML = out;
+    $("chart-desc").textContent = desc.join("; ");
+  }
+
+  // Tooltip on bars
+  const tooltip = $("tooltip");
+  $("chart").addEventListener("mousemove", (e) => {
+    const tip = e.target.getAttribute && e.target.getAttribute("data-tip");
+    if (!tip) { tooltip.style.opacity = 0; return; }
+    tooltip.textContent = tip;
+    tooltip.style.left = (e.clientX + 12) + "px";
+    tooltip.style.top = (e.clientY - 28) + "px";
+    tooltip.style.opacity = 1;
+  });
+  $("chart").addEventListener("mouseleave", () => { tooltip.style.opacity = 0; });
+
+  // Wire the controls
+  const bind = (id, fn) => $(id).addEventListener("input", (e) => { fn(parseFloat(e.target.value)); update(); });
+  bind("cn", (v) => { state.cn = v / 100; state.preset = null; });
+  bind("vn", (v) => { state.vn = v / 100; state.preset = null; });
+  bind("mx", (v) => { state.mx = v / 100; state.preset = null; });
+  bind("ocean", (v) => { state.ocean = v; });
+  bind("mxboard", (v) => { state.mxboard = v; });
+  bind("capex", (v) => { state.capex = v; });
+  bind("years", (v) => { state.years = v; });
+  document.querySelectorAll("[data-lang]").forEach((b) => b.addEventListener("click", () => {
+    lang = b.dataset.lang;
+    try { localStorage.setItem("lang", lang); } catch (e) { /* storage unavailable */ }
+    renderText(); update();
+  }));
+  window.addEventListener("resize", () => drawChart(currentModel()));
+
+  renderText();
+  syncInputs();
+  update();
+})();
+</script>
+</body>
+</html>

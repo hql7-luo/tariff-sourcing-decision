@@ -1,0 +1,5 @@
+option,label,avg_cost_per_k,scenario,scenario_label
+china,Stay in China,207.38,expected,Probability-weighted
+vietnam,Move to Vietnam now,214.65,expected,Probability-weighted
+mexico,Move to Mexico now,240.87,expected,Probability-weighted
+staged,"Stay in China, keep Vietnam ready",208.5,expected,Probability-weighted

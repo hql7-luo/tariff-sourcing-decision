@@ -1,0 +1,5 @@
+option,label,mean,p10,p50,p90,share_cheapest,regret_mean,regret_p90
+china,Stay in China,195.893,174.967,192.468,222.013,0.776,1.03,4.408
+vietnam,Move to Vietnam now,201.958,182.58,202.472,220.013,0.208,7.095,13.796
+mexico,Move to Mexico now,236.33,221.888,235.948,249.571,0.016,41.467,67.231
+staged,"Stay in China, keep Vietnam ready",196.571,176.286,193.775,221.059,0.0,1.708,2.764

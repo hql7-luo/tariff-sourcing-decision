@@ -1,0 +1,5 @@
+scenario,label,cn_tariff,vn_tariff,mx_tariff,probability,basis
+status_quo,Status quo (Oct 2026),0.375,0.125,0.0,0.40,"China: Section 301 List 3 25% + forced-labor Section 301 12.5%. Vietnam: forced-labor Section 301 12.5%. Mexico: USMCA-qualifying goods exempt. MFN on HTS 4819.20 is free."
+relief,Relief,0.25,0.0,0.0,0.20,"Forced-labor Section 301 tariffs are struck down or dropped (court challenge pending); China List 3 stays"
+overcapacity,Overcapacity tariffs,0.625,0.225,0.0,0.30,"Excess-capacity Section 301 (16 economies incl. China and Vietnam; paper sector named) adds 25 points on China and 10 on Vietnam; USMCA goods stay exempt"
+usmca_friction,USMCA friction,0.375,0.125,0.10,0.10,"US declined to renew USMCA in July 2026; Mexican cartons lose preference and pay the 10% Section 301 rate"

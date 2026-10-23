@@ -1,0 +1,17 @@
+scenario,scenario_label,probability,option,label,pv_usd_millions,avg_cost_per_k
+status_quo,Status quo (Oct 2026),0.4,china,Stay in China,45.884,201.733
+status_quo,Status quo (Oct 2026),0.4,vietnam,Move to Vietnam now,48.655,213.917
+status_quo,Status quo (Oct 2026),0.4,mexico,Move to Mexico now,54.241,238.476
+status_quo,Status quo (Oct 2026),0.4,staged,"Stay in China, keep Vietnam ready",46.184,203.052
+relief,Relief,0.2,china,Stay in China,42.673,187.617
+relief,Relief,0.2,vietnam,Move to Vietnam now,44.482,195.569
+relief,Relief,0.2,mexico,Move to Mexico now,54.241,238.476
+relief,Relief,0.2,staged,"Stay in China, keep Vietnam ready",42.973,188.936
+overcapacity,Overcapacity tariffs,0.3,china,Stay in China,52.305,229.965
+overcapacity,Overcapacity tariffs,0.3,vietnam,Move to Vietnam now,51.993,228.595
+overcapacity,Overcapacity tariffs,0.3,mexico,Move to Mexico now,54.241,238.476
+overcapacity,Overcapacity tariffs,0.3,staged,"Stay in China, keep Vietnam ready",52.451,230.607
+usmca_friction,USMCA friction,0.1,china,Stay in China,45.884,201.733
+usmca_friction,USMCA friction,0.1,vietnam,Move to Vietnam now,48.655,213.917
+usmca_friction,USMCA friction,0.1,mexico,Move to Mexico now,59.693,262.448
+usmca_friction,USMCA friction,0.1,staged,"Stay in China, keep Vietnam ready",46.184,203.052

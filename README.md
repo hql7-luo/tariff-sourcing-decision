@@ -78,7 +78,7 @@ All sources with links: [docs/data-sources.md](docs/data-sources.md).
 ```bash
 pip install -r requirements.txt
 python run_analysis.py   # writes results/, figures/ and the explorer data
-pytest                   # 12 checks, including Python vs. JavaScript parity
+pytest                   # model checks, including Python vs. JavaScript parity
 ```
 
 To try your own assumptions, edit `data/inputs.csv` or `data/tariff_scenarios.csv` and run again, or use the [interactive explorer](https://hql7-luo.github.io/tariff-sourcing-decision/).

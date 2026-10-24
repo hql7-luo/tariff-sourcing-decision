@@ -129,22 +129,30 @@ def test_headline_numbers_today(setup):
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node.js not installed")
-def test_web_explorer_matches_python(setup):
+@pytest.mark.parametrize("discount_rate", [0.0, 0.10])
+def test_web_explorer_matches_python(setup, discount_rate):
     inp, sites, scenarios = setup
+    inp = dict(inp, discount_rate=discount_rate)
     script = """
     const M = require(process.argv[1] + '/docs/model.js');
     const D = require(process.argv[1] + '/docs/model-data.js');
+    const inp = JSON.parse(process.argv[2]);
     const out = {};
     for (const s of D.scenarios) {
       out[s.name] = {};
       for (const o of ['china', 'vietnam', 'mexico', 'staged'])
-        out[s.name][o] = M.pvToUnitCost(M.optionPresentValue(o, s.tariff, D.sites, D.inputs), D.inputs);
+        out[s.name][o] = M.pvToUnitCost(M.optionPresentValue(o, s.tariff, D.sites, inp), inp);
     }
     console.log(JSON.stringify(out));
     """
-    result = subprocess.run(["node", "-e", script, str(ROOT)], capture_output=True, text=True, check=True)
+    result = subprocess.run(["node", "-e", script, str(ROOT), json.dumps(inp)], capture_output=True, text=True, check=True)
     js = json.loads(result.stdout)
     for s in scenarios:
         for option in OPTIONS:
             py = pv_to_unit_cost(option_present_value(option, s["tariff"], sites, inp), inp)
             assert js[s["name"]][option] == pytest.approx(py, abs=1e-6)
+
+
+def test_zero_discount_recovers_investment_without_interest():
+    payment = capital_recovery_per_year(5e6, 1e6, 0.4, 0.0, 5)
+    assert payment == pytest.approx((5e6 + 1e6 - 0.4 * 5e6) / 5)

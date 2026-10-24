@@ -70,7 +70,7 @@
 ```bash
 pip install -r requirements.txt
 python run_analysis.py   # 生成 results/、figures/ 和交互页面的数据
-pytest                   # 12 项检查，包括 Python 和 JavaScript 结果一致
+pytest                   # 模型检查，包括 Python 和 JavaScript 结果一致
 ```
 
 想换自己的假设，可以改 `data/inputs.csv` 或 `data/tariff_scenarios.csv` 再运行，也可以直接用[交互式测算页面](https://hql7-luo.github.io/tariff-sourcing-decision/)。

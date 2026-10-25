@@ -1,5 +1,5 @@
 // Landed cost model for the web explorer.
-// A line-by-line port of src/sourcing/model.py; tests/test_explorer.py checks both give the same numbers.
+// A line-by-line port of src/sourcing/model.py; tests/test_model.py checks both give the same numbers.
 
 (function (root) {
   const COMPONENTS = [
@@ -10,7 +10,7 @@
   // One-time investment turned into an equal yearly charge, after equipment resale value
   function capitalRecoveryPerYear(capex, startup, salvageShare, rate, years) {
     const netPresentCost = capex + startup - salvageShare * capex / Math.pow(1 + rate, years);
-    const factor = rate / (1 - Math.pow(1 + rate, -years));
+    const factor = rate === 0 ? 1 / years : rate / (1 - Math.pow(1 + rate, -years));
     return netPresentCost * factor;
   }
 

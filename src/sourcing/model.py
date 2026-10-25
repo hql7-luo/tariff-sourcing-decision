@@ -19,7 +19,7 @@ COMPONENTS = [
 # after crediting the equipment resale value at the end.
 def capital_recovery_per_year(capex, startup, salvage_share, rate, years):
     net_present_cost = capex + startup - salvage_share * capex / (1 + rate) ** years
-    capital_recovery_factor = rate / (1 - (1 + rate) ** -years)
+    capital_recovery_factor = 1 / years if rate == 0 else rate / (1 - (1 + rate) ** -years)
     return net_present_cost * capital_recovery_factor
 
 

@@ -104,4 +104,4 @@ run_analysis.py
 
 ## About
 
-Independent project by Haoqi Luo (University of Washington, Foster School of Business). I framed the business question, set the scope and reviewed the assumptions and results; AI tools (Claude) substantially assisted the research, code and writing. Not trade, legal or investment advice.
+Independent project by Haoqi Luo. I chose the question, checked the data and results, and decided the conclusions. AI coding tools helped with the implementation. Not trade, legal or investment advice.

@@ -63,6 +63,7 @@
   .seg button { border: 0; background: transparent; color: var(--ink-2); padding: 6px 12px; font: inherit; font-size: 13px; cursor: pointer; }
   .seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
   a { color: inherit; }
+  .back { margin: 0 0 12px; }
   .link { font-size: 13px; color: var(--ink-2); text-decoration: none; border-bottom: 1px solid var(--axis); }
 
   .presets { display: flex; gap: 8px; flex-wrap: wrap; margin: 24px 0 16px; align-items: center; }
@@ -119,6 +120,7 @@
 <div class="wrap">
   <header>
     <div>
+      <p class="back"><a class="link" id="case-link" href="https://hql7-luo.github.io/projects/tariff-sourcing-decision.html" data-i18n="back"></a></p>
       <p class="eyebrow" data-i18n="eyebrow"></p>
       <h1 data-i18n="title"></h1>
       <p class="lede" data-i18n="lede"></p>
@@ -210,6 +212,7 @@
       eyebrow: "Interactive explorer",
       title: "China, Vietnam or Mexico?",
       lede: "Landed cost of printed folding cartons for a US customer, from a fictional Zhejiang maker. Move the sliders to test tariff and cost scenarios.",
+      back: "← Project case study",
       repo: "Code and method on GitHub ↗",
       presets: "Tariff scenarios:",
       controls: "Assumptions",
@@ -242,6 +245,7 @@
       eyebrow: "交互式测算",
       title: "中国、越南还是墨西哥？",
       lede: "一家虚构的浙江彩盒厂向美国客户供应印刷折叠纸盒，比较三地的到岸总成本。拖动滑块测试不同关税和成本情景。",
+      back: "← 返回项目案例",
       repo: "GitHub 代码和方法 ↗",
       presets: "关税情景：",
       controls: "假设条件",
@@ -287,8 +291,13 @@
   const SITE_VAR = { CN: "--china", VN: "--vietnam", MX: "--mexico" };
   const OPTION_SITE = { china: "CN", vietnam: "VN", mexico: "MX" };
 
-  let lang = "en";
-  try { if (localStorage.getItem("lang") === "zh") lang = "zh"; } catch (e) { /* storage unavailable */ }
+  // A link's ?lang= wins, then this page's last choice, then the portfolio site's language (same origin).
+  const pick = (v) => (v === "en" || v === "zh" ? v : null);
+  const urlLang = pick(new URLSearchParams(location.search).get("lang"));
+  let lang = urlLang || "en";
+  if (!urlLang) {
+    try { lang = pick(localStorage.getItem("lang")) || pick(localStorage.getItem("portfolio-language")) || "en"; } catch (e) { /* storage unavailable */ }
+  }
 
   const $ = (id) => document.getElementById(id);
   const money = (v) => "$" + v.toFixed(1);
@@ -333,6 +342,7 @@
     document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
     document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = T[el.dataset.i18n]; });
     document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+    $("case-link").href = "https://hql7-luo.github.io/projects/tariff-sourcing-decision.html?lang=" + lang;
     renderPresets();
     $("legend").innerHTML = SITES.map((s) => `<span><i style="background:var(${SITE_VAR[s]})"></i>${T.sites[s]}</span>`).join("");
   }
@@ -483,6 +493,8 @@
   document.querySelectorAll("[data-lang]").forEach((b) => b.addEventListener("click", () => {
     lang = b.dataset.lang;
     try { localStorage.setItem("lang", lang); } catch (e) { /* storage unavailable */ }
+    // Keep the address in step, so a copied link opens in the language on screen.
+    try { const url = new URL(location.href); url.searchParams.set("lang", lang); history.replaceState(history.state, "", url); } catch (e) { /* ignore */ }
     renderText(); update();
   }));
   window.addEventListener("resize", () => drawChart(currentModel()));
